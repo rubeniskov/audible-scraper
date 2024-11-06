@@ -1,22 +1,22 @@
 use reqwest::{header, Client};
 use std::error::Error;
 
-use crate::{QueryParams, Scrapper};
+use crate::{QueryParams, Scraper};
 
-/// `Builder` is a struct that helps in constructing a `Scrapper` instance with specified
+/// `Builder` is a struct that helps in constructing a `Scraper` instance with specified
 /// `QueryParams` and an optional `reqwest::Client`.
 ///
 /// # Fields
 ///
-/// * `params` - The query parameters used for the scrapper.
-/// * `client` - An optional HTTP client to be used by the scrapper.
+/// * `params` - The query parameters used for the scraper.
+/// * `client` - An optional HTTP client to be used by the scraper.
 ///
 /// # Methods
 ///
 /// * `new(params: QueryParams) -> Self` - Creates a new `Builder` instance with the given query parameters.
 /// * `params(&mut self, params: QueryParams) -> &mut Self` - Sets the query parameters for the builder.
 /// * `client(&mut self, client: Client) -> &mut Self` - Sets the HTTP client for the builder.
-/// * `build(&self) -> Result<Scrapper, Box<dyn Error>>` - Constructs a `Scrapper` instance using the specified parameters and client.
+/// * `build(&self) -> Result<Scraper, Box<dyn Error>>` - Constructs a `Scraper` instance using the specified parameters and client.
 
 #[derive(Default)]
 pub struct Builder {
@@ -51,7 +51,7 @@ impl Builder {
         self
     }
 
-    pub fn build(&self) -> Result<Scrapper, Box<dyn Error>> {
+    pub fn build(&self) -> Result<Scraper, Box<dyn Error>> {
         let client = self.client.clone().unwrap_or(Client::builder()
         .default_headers({
             let mut headers = header::HeaderMap::new();
@@ -67,6 +67,6 @@ impl Builder {
             headers
         }).build()?);
 
-        Ok(Scrapper::new(client, self.params.clone()))
+        Ok(Scraper::new(client, self.params.clone()))
     }
 }

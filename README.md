@@ -14,7 +14,7 @@ _Audible Scraper_ is a command-line tool (CLI) written in Rust that allows you t
 
 ## Installation using pre-built binaries
 
-Got to the [release page](https://github.com/rubeniskov/audible-scrapper/releases) and download the latest release for your operating system.
+Got to the [release page](https://github.com/rubeniskov/audible-scraper/releases) and download the latest release for your operating system.
 
 ## Install from Source
 
@@ -26,8 +26,8 @@ Clone the repository and install dependencies using `cargo`:
 2. **Cargo**: Cargo should be available as part of Rust for managing dependencies and building the project.
 
 ```bash
-git clone https://github.com/rubeniskov/audible-scrapper.git
-cd audible-scrapper-main
+git clone https://github.com/rubeniskov/audible-scraper.git
+cd audible-scraper-main
 cargo install --path .
 ```
 
@@ -39,7 +39,7 @@ Below is a basic usage example of the CLI, allowing you to specify output format
 audible-scraper --format <json|csv|jsonl|toml> [--narrator <narrator_name>]
 CLI to scrape Audible audiobooks
 
-Usage: audible-scrapper.exe [OPTIONS]
+Usage: audible-scraper.exe [OPTIONS]
 
 Options:
   -n, --narrator <NARRATOR>  Narrator name to filter audiobooks (optional)
@@ -49,7 +49,7 @@ Options:
 ```
 
 ```bash
-audible-scrapper --narrator "Jordi Salas"
+audible-scraper --narrator "Jordi Salas"
 [
   {
     "title": "1793 (Spanish Edition)",
@@ -81,7 +81,7 @@ audible-scrapper --narrator "Jordi Salas"
 - **`src/audio_book.rs`**: Defines the `AudioBook` struct representing audiobook data.
 - **`src/builder.rs`**: Contains the construction of custom queries.
 - **`src/params.rs`**: Defines the query parameters.
-- **`src/scrapper.rs`**: Implements the main scraping logic for Audible.
+- **`src/scraper.rs`**: Implements the main scraping logic for Audible.
 
 ## Common Error Handling
 

@@ -4,13 +4,13 @@ use url::Url;
 
 use crate::{PageResult, QueryParams};
 
-// Struct to hold search parameters for AudibleScrapper
-pub struct Scrapper {
+// Struct to hold search parameters for AudibleScraper
+pub struct Scraper {
     client: Client,
     params: QueryParams,
 }
 
-impl Scrapper {
+impl Scraper {
     pub fn new(client: Client, params: QueryParams) -> Self {
         Self { client, params }
     }

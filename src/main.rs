@@ -1,4 +1,4 @@
-use audible_scrapper::{AudioBook, Builder, QueryParams};
+use audible_scraper::{AudioBook, Builder, QueryParams};
 use clap::{Parser, ValueEnum};
 use csv;
 use serde_json;
@@ -45,11 +45,11 @@ async fn main() {
         params = params.keywords(keywords);
     }
 
-    let scrapper = Builder::new(params)
+    let scraper = Builder::new(params)
         .build()
-        .expect("Failed to build scrapper");
+        .expect("Failed to build scraper");
 
-    match scrapper.fetch_all().await {
+    match scraper.fetch_all().await {
         Ok(result) => {
             let audiobooks: Vec<AudioBook> =
                 result.iter().flat_map(|f| f.collect().unwrap()).collect();

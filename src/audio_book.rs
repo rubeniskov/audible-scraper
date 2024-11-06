@@ -21,7 +21,7 @@ use url::Url;
 /// ```
 /// use chrono::NaiveDate;
 /// use url::Url;
-/// use audible_scrapper::AudioBook;
+/// use audible_scraper::AudioBook;
 ///
 /// let title = String::from("The Rust Programming Language");
 /// let narrator = String::from("Steve Klabnik");

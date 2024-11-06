@@ -1,10 +1,10 @@
 [package]
-name = "audible-scrapper"
+name = "audible-scraper"
 version = "0.1.0"
 edition = "2021"
 
 [[bin]]
-name = "audible-scrapper"
+name = "audible-scraper"
 
 [dependencies]
 futures = "0.3.31"

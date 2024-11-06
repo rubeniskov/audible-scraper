@@ -15,7 +15,7 @@ use regex::Regex;
 ///
 /// ```
 /// use chrono::NaiveDate;
-/// use audible_scrapper::extract_date;
+/// use audible_scraper::extract_date;
 /// let text = "The event is scheduled for 12-05-21.";
 /// let date = extract_date(text).unwrap();
 /// assert_eq!(date, NaiveDate::from_ymd_opt(2021, 5, 12).unwrap());
