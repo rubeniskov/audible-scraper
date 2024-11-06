@@ -12,19 +12,23 @@ _Audible Scraper_ is a command-line tool (CLI) written in Rust that allows you t
   - **TOML**
 - Asynchronous implementation for scalability and efficiency.
 
-## Prerequisites
+## Installation using pre-built binaries
+
+Got to the [release page](https://github.com/rubeniskov/audible-scrapper/releases) and download the latest release for your operating system.
+
+## Install from Source
+
+Clone the repository and install dependencies using `cargo`:
+
+### Prerequisites
 
 1. **Rust**: Ensure that Rust is installed on your system. You can install it by following the instructions on [rust-lang.org](https://www.rust-lang.org/).
 2. **Cargo**: Cargo should be available as part of Rust for managing dependencies and building the project.
 
-## Installation
-
-Clone the repository and install dependencies using `cargo`:
-
 ```bash
-git clone <repository-url>
+git clone https://github.com/rubeniskov/audible-scrapper.git
 cd audible-scrapper-main
-cargo build --release
+cargo install --path .
 ```
 
 ## Usage
@@ -32,30 +36,40 @@ cargo build --release
 Below is a basic usage example of the CLI, allowing you to specify output format and optionally filter by narrator.
 
 ```bash
-./target/release/audible_scraper --format <json|csv|jsonl|toml> [--narrator <narrator_name>]
+audible-scraper --format <json|csv|jsonl|toml> [--narrator <narrator_name>]
+CLI to scrape Audible audiobooks
+
+Usage: audible-scrapper.exe [OPTIONS]
+
+Options:
+  -n, --narrator <NARRATOR>  Narrator name to filter audiobooks (optional)
+  -k, --keywords <KEYWORDS>
+  -f, --format <FORMAT>      Output format: jsonl, csv, json, or toml [default: json] [possible values: jsonl, csv, json, toml]
+  -h, --help                 Print help
 ```
 
-### Usage Examples
+```bash
+audible-scrapper --narrator "Jordi Salas"
+[
+  {
+    "title": "1793 (Spanish Edition)",
+    "narrator": "Jordi Salas",
+    "language": "Español (Castellano)",
+    "releaseDate": "2020-07-30",
+    "sampleUrl": "https://samples.audible.com/bk/rhsp/002067/bk_rhsp_002067_sample.mp3"
+  },
+  ...
+  {
+    "title": "Una Visión Estratégica para los Retos Económicos del Siglo XXI (Narración en Castellano)",
+    "narrator": "Jordi Salas",
+    "language": "Español (Castellano)",
+    "releaseDate": "2020-11-19",
+    "sampleUrl": "https://samples.audible.com/bk/adbl/057704/bk_adbl_057704_sample.mp3"
+  }
+]
+```
 
-1. **Extract in JSON format without narrator filter**:
-
-   ```bash
-   ./target/release/audible_scraper --format json
-   ```
-
-2. **Extract in CSV format filtered by narrator**:
-
-   ```bash
-   ./target/release/audible_scraper --format csv --narrator "Stephen Fry"
-   ```
-
-3. **Extract in TOML format**:
-
-   ```bash
-   ./target/release/audible_scraper --format toml
-   ```
-
-### Command line Arguments
+## Command line Arguments
 
 - `--format`: Defines the output format. Available options: `json`, `csv`, `jsonl`, `toml`. **Default**: `json`.
 - `--narrator`: Filters results to include only audiobooks narrated by the specified name. **Optional**.

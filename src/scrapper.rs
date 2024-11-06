@@ -26,7 +26,6 @@ impl Scrapper {
 
         // Continue fetching while there is a next page
         while let Some(next_page_url) = result.next_page_url() {
-            eprintln!("Fetching next page: {}\n", next_page_url);
             result = self.fetch_page(next_page_url).await?; // Fetch the next page by URL
             results.push(result.clone());
         }
