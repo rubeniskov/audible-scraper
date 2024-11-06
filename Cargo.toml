@@ -3,6 +3,9 @@ name = "audible-scrapper"
 version = "0.1.0"
 edition = "2021"
 
+[[bin]]
+name = "audible-scrapper"
+
 [dependencies]
 futures = "0.3.31"
 reqwest = { version = "0.12.9", features = ["json"] }
