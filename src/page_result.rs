@@ -1,10 +1,29 @@
-use html_escape::decode_html_entities;
 use scraper::{Html, Selector};
 use serde::Serialize;
 use url::Url;
 
-use crate::AudioBook;
+use crate::{extract_date, AudioBook};
 
+/// Represents the result of a page fetch operation, containing information about the current page,
+/// navigation to next and previous pages, and the content of the page.
+///
+/// # Fields
+/// - `page`: The current page number.
+/// - `has_next`: Indicates if there is a next page.
+/// - `has_prev`: Indicates if there is a previous page.
+/// - `next_page_url`: The URL of the next page, if available.
+/// - `prev_page_url`: The URL of the previous page, if available.
+/// - `url`: The URL of the current page.
+/// - `body`: The HTML content of the current page (not serialized).
+///
+/// # Methods
+/// - `new(url: Url, body: String) -> Self`: Constructs a new `PageResult` from the given URL and HTML body.
+/// - `collect(&self) -> Result<Vec<AudioBook>, Box<dyn std::error::Error>>`: Extracts audiobook details from the page content.
+/// - `has_next(&self) -> bool`: Returns `true` if there is a next page.
+/// - `has_prev(&self) -> bool`: Returns `true` if there is a previous page.
+/// - `next_page_url(&self) -> Option<Url>`: Returns the URL of the next page, if available.
+/// - `prev_page_url(&self) -> Option<Url>`: Returns the URL of the previous page, if available.
+use html_escape::decode_html_entities;
 #[derive(Debug, Clone, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct PageResult {
@@ -18,26 +37,8 @@ pub struct PageResult {
     body: String,
 }
 
-use chrono::NaiveDate;
-use regex::Regex;
-
-fn extract_date(text: &str) -> Result<NaiveDate, Box<dyn std::error::Error>> {
-    // Define a regex pattern to capture any date in dd-mm-yy format
-    let re = Regex::new(r"(\d{2}-\d{2}-\d{2})")?;
-
-    // Find the date in the text
-    let date_str = re
-        .captures(text)
-        .and_then(|caps| caps.get(1).map(|m| m.as_str()))
-        .ok_or("Date not found")?;
-
-    // Parse the date string to a NaiveDate object using the format dd-mm-yy
-    let date = NaiveDate::parse_from_str(date_str, "%d-%m-%y")?;
-
-    Ok(date)
-}
-
 impl PageResult {
+    /// Constructs a new `PageResult` from the given URL and HTML body.
     pub fn new(url: Url, body: String) -> Self {
         let document = Html::parse_document(&body);
 
@@ -93,6 +94,10 @@ impl PageResult {
         }
     }
 
+    /// Extracts audiobook details from the page content.
+    /// Returns a vector of `AudioBook` instances.
+    /// # Errors
+    /// Returns an error if any required data is missing or cannot be parsed.
     pub fn collect(&self) -> Result<Vec<AudioBook>, Box<dyn std::error::Error>> {
         let document = Html::parse_document(&self.body);
 
@@ -102,10 +107,15 @@ impl PageResult {
         let narrator_selector = Selector::parse("li.narratorLabel span.bc-text a")?;
         let language_selector = Selector::parse("li.languageLabel span.bc-text")?;
         let release_date_selector = Selector::parse("li.releaseDateLabel span.bc-text")?;
-
+        let items = document.select(&item_selector);
         // Collect audiobook details
         let mut audiobooks = Vec::new();
-        for item in document.select(&item_selector) {
+
+        if items.clone().count() == 0 {
+            return Err("No items found".into());
+        }
+
+        for item in items {
             if let Some(button) = item.select(&button_selector).next() {
                 let mp3_url = Url::parse(
                     button
@@ -164,5 +174,80 @@ impl PageResult {
 
     pub fn prev_page_url(&self) -> Option<Url> {
         self.prev_page_url.clone()
+    }
+
+    pub fn url(&self) -> &Url {
+        &self.url
+    }
+
+    pub fn page(&self) -> u32 {
+        self.page
+    }
+}
+
+/// Extracts audiobook details from the page content.
+/// Returns a vector of `AudioBook` instances.
+/// # Errors
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::fs;
+
+    #[test]
+    fn test_page_result_new() {
+        let url = Url::parse("https://example.com").unwrap();
+        let body = fs::read_to_string("test_data/result_first_page.html").unwrap();
+        let page_result = PageResult::new(url.clone(), body);
+
+        assert_eq!(page_result.page(), 1);
+        assert_eq!(page_result.url(), &url);
+        assert!(page_result.has_next());
+        assert!(!page_result.has_prev());
+    }
+
+    #[test]
+    fn test_page_result_collect() {
+        let url = Url::parse("https://example.com").unwrap();
+        let body = fs::read_to_string("test_data/result_first_page.html").unwrap();
+        let page_result = PageResult::new(url, body);
+
+        let audiobooks = page_result.collect().unwrap();
+        assert!(!audiobooks.is_empty());
+
+        let first_audiobook = &audiobooks[0];
+        assert_eq!(first_audiobook.title(), "1793 (Spanish Edition)");
+        assert_eq!(first_audiobook.narrator(), "Jordi Salas");
+        assert_eq!(first_audiobook.language(), "Español (Castellano)");
+        assert!(first_audiobook.release_date().is_some());
+        assert_eq!(
+            first_audiobook.sample_url().as_str(),
+            "https://samples.audible.com/bk/rhsp/002067/bk_rhsp_002067_sample.mp3"
+        );
+    }
+
+    #[test]
+    fn test_page_result_first() {
+        let url = Url::parse("https://example.com").unwrap();
+        let body = fs::read_to_string("test_data/result_first_page.html").unwrap();
+        let page_result = PageResult::new(url, body);
+
+        assert!(page_result.has_next());
+        assert!(page_result.next_page_url().is_some());
+        assert!(!page_result.has_prev());
+        assert!(page_result.prev_page_url().is_none());
+        assert_eq!(page_result.page(), 1);
+    }
+
+    #[test]
+    fn test_page_result_last() {
+        let url = Url::parse("https://example.com").unwrap();
+        let body = fs::read_to_string("test_data/result_last_page.html").unwrap();
+        let page_result = PageResult::new(url, body);
+
+        assert!(!page_result.has_next());
+        assert!(page_result.next_page_url().is_none());
+        assert!(page_result.has_prev());
+        assert!(page_result.prev_page_url().is_some());
+        assert_eq!(page_result.page(), 3);
     }
 }

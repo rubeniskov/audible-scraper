@@ -1,11 +1,13 @@
 mod audio_book;
 mod builder;
-mod fetch_result;
+mod page_result;
 mod params;
 mod scrapper;
+mod utils;
 
 pub use audio_book::AudioBook;
 pub use builder::Builder;
-pub use fetch_result::PageResult;
+pub use page_result::PageResult;
 pub use params::QueryParams;
 pub use scrapper::Scrapper;
+pub use utils::*;

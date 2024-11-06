@@ -3,12 +3,26 @@ use std::error::Error;
 
 use crate::{QueryParams, Scrapper};
 
+/// `Builder` is a struct that helps in constructing a `Scrapper` instance with specified
+/// `QueryParams` and an optional `reqwest::Client`.
+///
+/// # Fields
+///
+/// * `params` - The query parameters used for the scrapper.
+/// * `client` - An optional HTTP client to be used by the scrapper.
+///
+/// # Methods
+///
+/// * `new(params: QueryParams) -> Self` - Creates a new `Builder` instance with the given query parameters.
+/// * `params(&mut self, params: QueryParams) -> &mut Self` - Sets the query parameters for the builder.
+/// * `client(&mut self, client: Client) -> &mut Self` - Sets the HTTP client for the builder.
+/// * `build(&self) -> Result<Scrapper, Box<dyn Error>>` - Constructs a `Scrapper` instance using the specified parameters and client.
+
 #[derive(Default)]
 pub struct Builder {
     params: QueryParams,
     client: Option<Client>,
 }
-
 impl Builder {
     pub fn new(params: QueryParams) -> Self {
         Self {
@@ -17,6 +31,16 @@ impl Builder {
         }
     }
 
+    /// Override the query parameters for the builder.
+    ///
+    /// # Arguments
+    ///
+    /// * `params` - The query parameters to set.
+    ///
+    /// # Returns
+    ///
+    /// Returns a mutable reference to the builder, allowing for method chaining.
+    ///
     pub fn params(&mut self, params: QueryParams) -> &mut Self {
         self.params = params;
         self

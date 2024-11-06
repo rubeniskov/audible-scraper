@@ -30,11 +30,12 @@ enum OutputFormat {
 
 #[tokio::main]
 async fn main() {
-    // Parse the command-line arguments
     let args = Args::parse();
-
-    // Configura los parámetros de búsqueda, usando narrator solo si está presente
     let mut params = QueryParams::new();
+
+    if args.narrator.is_none() && args.keywords.is_none() {
+        panic!("At least one of the optional arguments (narrator or keywords) must be provided");
+    }
 
     if let Some(narrator) = args.narrator.as_deref() {
         params = params.narrator(narrator);
